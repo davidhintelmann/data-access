@@ -22,27 +22,29 @@ type ProtocolQuery struct {
 	Net_Transport          string
 }
 
-func QueryPerson(ctx context.Context, db *sql.DB) ([]CCount, error) {
+func QueryPerson(ctx context.Context, conn *sql.DB, database string) ([]CCount, error) {
 	// Check if database is alive.
-	// err := db.PingContext(ctx)
+	// err := conn.PingContext(ctx)
 	// if err != nil {
 	// 	log.Fatal("Error pinging database: " + err.Error())
 	// }
 
-	query := `SELECT TOP (6) [AdventureWorks2019Go].[Person].[CountryRegion].[Name] AS "Country"
-	,COUNT([AdventureWorks2019Go].[Person].[Person].[BusinessEntityID]) AS "Business Sum"
-	FROM [AdventureWorks2019Go].[Person].[Person]
-	JOIN [AdventureWorks2019Go].[Person].[BusinessEntityAddress] ON [AdventureWorks2019Go].[Person].[BusinessEntityAddress].[BusinessEntityID] = [AdventureWorks2019Go].[Person].[Person].[BusinessEntityID]
-	JOIN [AdventureWorks2019Go].[Person].[Address] ON [AdventureWorks2019Go].[Person].[Address].[AddressID] = [AdventureWorks2019Go].[Person].[BusinessEntityAddress].[AddressID]
-	JOIN [AdventureWorks2019Go].[Person].[StateProvince] ON [AdventureWorks2019Go].[Person].[StateProvince].[StateProvinceID] = [AdventureWorks2019Go].[Person].[Address].[StateProvinceID]
-	JOIN [AdventureWorks2019Go].[Person].[CountryRegion] ON [AdventureWorks2019Go].[Person].[CountryRegion].[CountryRegionCode] = [AdventureWorks2019Go].[Person].[StateProvince].[CountryRegionCode]
-	GROUP BY [AdventureWorks2019Go].[Person].[CountryRegion].[Name]
-	ORDER BY COUNT([AdventureWorks2019Go].[Person].[Person].[BusinessEntityID]) DESC`
+	query := `SELECT TOP (6) [%s].[Person].[CountryRegion].[Name] AS "Country"
+	,COUNT([%s].[Person].[Person].[BusinessEntityID]) AS "Business Sum"
+	FROM [%s].[Person].[Person]
+	JOIN [%s].[Person].[BusinessEntityAddress] ON [%s].[Person].[BusinessEntityAddress].[BusinessEntityID] = [%s].[Person].[Person].[BusinessEntityID]
+	JOIN [%s].[Person].[Address] ON [%s].[Person].[Address].[AddressID] = [%s].[Person].[BusinessEntityAddress].[AddressID]
+	JOIN [%s].[Person].[StateProvince] ON [%s].[Person].[StateProvince].[StateProvinceID] = [%s].[Person].[Address].[StateProvinceID]
+	JOIN [%s].[Person].[CountryRegion] ON [%s].[Person].[CountryRegion].[CountryRegionCode] = [%s].[Person].[StateProvince].[CountryRegionCode]
+	GROUP BY [%s].[Person].[CountryRegion].[Name]
+	ORDER BY COUNT([%s].[Person].[Person].[BusinessEntityID]) DESC`
 
-	tsql := fmt.Sprintf(query)
+	tsql := fmt.Sprintf(query, database, database, database,
+		database, database, database, database, database, database, database,
+		database, database, database, database, database, database, database)
 
 	// Execute query
-	rows, err := db.QueryContext(ctx, tsql)
+	rows, err := conn.QueryContext(ctx, tsql)
 	if err != nil {
 		log.Fatal("Error reading table: " + err.Error())
 		return nil, err
@@ -72,29 +74,31 @@ func QueryPerson(ctx context.Context, db *sql.DB) ([]CCount, error) {
 	return ccount, nil
 }
 
-func QueryPersonTimeit(ctx context.Context, db *sql.DB) ([]CCount, error) {
+func QueryPersonTimeit(ctx context.Context, conn *sql.DB, database string) ([]CCount, error) {
 	// Check if database is alive.
-	// err := db.PingContext(ctx)
+	// err := conn.PingContext(ctx)
 	// if err != nil {
 	// 	log.Fatal("Error pinging database: " + err.Error())
 	// }
 
 	query_start := time.Now()
 
-	query := `SELECT TOP (6) [AdventureWorks2019Go].[Person].[CountryRegion].[Name] AS "Country"
-	,COUNT([AdventureWorks2019Go].[Person].[Person].[BusinessEntityID]) AS "Business Sum"
-	FROM [AdventureWorks2019Go].[Person].[Person]
-	JOIN [AdventureWorks2019Go].[Person].[BusinessEntityAddress] ON [AdventureWorks2019Go].[Person].[BusinessEntityAddress].[BusinessEntityID] = [AdventureWorks2019Go].[Person].[Person].[BusinessEntityID]
-	JOIN [AdventureWorks2019Go].[Person].[Address] ON [AdventureWorks2019Go].[Person].[Address].[AddressID] = [AdventureWorks2019Go].[Person].[BusinessEntityAddress].[AddressID]
-	JOIN [AdventureWorks2019Go].[Person].[StateProvince] ON [AdventureWorks2019Go].[Person].[StateProvince].[StateProvinceID] = [AdventureWorks2019Go].[Person].[Address].[StateProvinceID]
-	JOIN [AdventureWorks2019Go].[Person].[CountryRegion] ON [AdventureWorks2019Go].[Person].[CountryRegion].[CountryRegionCode] = [AdventureWorks2019Go].[Person].[StateProvince].[CountryRegionCode]
-	GROUP BY [AdventureWorks2019Go].[Person].[CountryRegion].[Name]
-	ORDER BY COUNT([AdventureWorks2019Go].[Person].[Person].[BusinessEntityID]) DESC`
+	query := `SELECT TOP (6) [%s].[Person].[CountryRegion].[Name] AS "Country"
+	,COUNT([%s].[Person].[Person].[BusinessEntityID]) AS "Business Sum"
+	FROM [%s].[Person].[Person]
+	JOIN [%s].[Person].[BusinessEntityAddress] ON [%s].[Person].[BusinessEntityAddress].[BusinessEntityID] = [%s].[Person].[Person].[BusinessEntityID]
+	JOIN [%s].[Person].[Address] ON [%s].[Person].[Address].[AddressID] = [%s].[Person].[BusinessEntityAddress].[AddressID]
+	JOIN [%s].[Person].[StateProvince] ON [%s].[Person].[StateProvince].[StateProvinceID] = [%s].[Person].[Address].[StateProvinceID]
+	JOIN [%s].[Person].[CountryRegion] ON [%s].[Person].[CountryRegion].[CountryRegionCode] = [%s].[Person].[StateProvince].[CountryRegionCode]
+	GROUP BY [%s].[Person].[CountryRegion].[Name]
+	ORDER BY COUNT([%s].[Person].[Person].[BusinessEntityID]) DESC`
 
-	tsql := fmt.Sprintf(query)
+	tsql := fmt.Sprintf(query, database, database, database,
+		database, database, database, database, database, database, database,
+		database, database, database, database, database, database, database)
 
 	// Execute query
-	rows, err := db.QueryContext(ctx, tsql)
+	rows, err := conn.QueryContext(ctx, tsql)
 	if err != nil {
 		log.Fatal("Error reading table: " + err.Error())
 		return nil, err
@@ -136,9 +140,9 @@ func FormatQueryPerson(ccount []CCount) {
 	}
 }
 
-func QueryProtocol(ctx context.Context, db *sql.DB) (*ProtocolQuery, error) {
+func QueryProtocol(ctx context.Context, conn *sql.DB, database string) (*ProtocolQuery, error) {
 	// Check if database is alive.
-	// err := db.PingContext(ctx)
+	// err := conn.PingContext(ctx)
 	// if err != nil {
 	// 	log.Fatal("Error pinging database - SYS: " + err.Error())
 	// }
@@ -146,13 +150,13 @@ func QueryProtocol(ctx context.Context, db *sql.DB) (*ProtocolQuery, error) {
 	// query_start := time.Now()
 
 	query := `SELECT session_id, most_recent_session_id, net_transport   
-	FROM AdventureWorks2019Go.sys.dm_exec_connections   
+	FROM %s.sys.dm_exec_connections   
 	WHERE session_id = @@SPID;`
 
-	tsql := fmt.Sprintf(query)
+	tsql := fmt.Sprintf(query, database)
 
 	// Execute query
-	rows, err := db.QueryContext(ctx, tsql)
+	rows, err := conn.QueryContext(ctx, tsql)
 	if err != nil {
 		log.Fatal("Error reading table - SYS: " + err.Error())
 		return nil, err
@@ -188,9 +192,9 @@ func QueryProtocol(ctx context.Context, db *sql.DB) (*ProtocolQuery, error) {
 	return &protocolq, nil
 }
 
-func QueryProtocolTimeit(ctx context.Context, db *sql.DB) (*ProtocolQuery, error) {
+func QueryProtocolTimeit(ctx context.Context, conn *sql.DB, database string) (*ProtocolQuery, error) {
 	// Check if database is alive.
-	// err := db.PingContext(ctx)
+	// err := conn.PingContext(ctx)
 	// if err != nil {
 	// 	log.Fatal("Error pinging database - SYS: " + err.Error())
 	// }
@@ -198,13 +202,13 @@ func QueryProtocolTimeit(ctx context.Context, db *sql.DB) (*ProtocolQuery, error
 	query_start := time.Now()
 
 	query := `SELECT session_id, most_recent_session_id, net_transport   
-	FROM AdventureWorks2019Go.sys.dm_exec_connections   
+	FROM %s.sys.dm_exec_connections   
 	WHERE session_id = @@SPID;`
 
-	tsql := fmt.Sprintf(query)
+	tsql := fmt.Sprintf(query, database)
 
 	// Execute query
-	rows, err := db.QueryContext(ctx, tsql)
+	rows, err := conn.QueryContext(ctx, tsql)
 	if err != nil {
 		log.Fatal("Error reading table - SYS: " + err.Error())
 		return nil, err

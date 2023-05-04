@@ -14,13 +14,13 @@ import (
 )
 
 // server, database, driver configuration
-var server, database, driver = "lpc:localhost", "AdventureWorks2019Go", "mssql" // "sqlserver" or "mssql"
+var server, database, driver = "lpc:localhost", "AdventureWorks2019", "mssql" // "sqlserver" or "mssql"
 
 // trusted connection, and encryption configuraiton
 var trusted_connection, encrypt = true, true
 
-// db is global variable to pass between functions
-var db *sql.DB
+// conn is global variable to pass between functions
+var conn *sql.DB
 
 // Use background context globally to pass between functions
 var ctx = context.Background()
@@ -49,14 +49,14 @@ func main() {
 func TimeProgram(ctx context.Context) time.Duration {
 	start := time.Now()
 
-	db, _ := connect.ConnectMSSQLVersion(ctx, db, driver, server, database, trusted_connection, encrypt)
-	defer db.Close()
+	conn, _ := connect.ConnectMSSQLVersion(ctx, conn, driver, server, database, trusted_connection, encrypt)
+	defer conn.Close()
 
-	if _, err := connect.QueryProtocolTimeit(ctx, db); err != nil {
+	if _, err := connect.QueryProtocolTimeit(ctx, conn, database); err != nil {
 		log.Fatal("Error while executing query to AdentureWorks DB: " + err.Error())
 	}
 
-	if ccount, err := connect.QueryPerson(ctx, db); err != nil {
+	if ccount, err := connect.QueryPerson(ctx, conn, database); err != nil {
 		log.Fatal("Error while executing query to AdentureWorks DB: " + err.Error())
 	} else {
 		connect.FormatQueryPerson(ccount)
